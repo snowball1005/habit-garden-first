@@ -1,0 +1,137 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6957b8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="apple-mobile-web-app-title" content="첫째 자기주도 공부 정원"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon-192.png"><link rel="apple-touch-icon" href="./icon-192.png"><title>첫째의 자기주도 공부 정원</title>
+ <style>:root{--accent:#6957b8;--bg:#f8f7ff}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,'Malgun Gothic',sans-serif;color:#273044}header{background:var(--accent);color:white;padding:22px max(16px,calc((100% - 780px)/2))}header h1{margin:0;font-size:24px}header p{margin:5px 0;font-size:13px;opacity:.9}main{max-width:780px;margin:auto;padding:14px 14px 60px}.card{background:white;border-radius:18px;padding:20px;margin:14px 0;box-shadow:0 5px 22px #0000000c}h2{font-size:19px;margin:0 0 12px}h3{font-size:16px;margin:14px 0 8px}.muted{color:#687181;font-size:13px;line-height:1.65}.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.grow{flex:1}.accent{color:var(--accent)}button{font:inherit;border:0;border-radius:11px;cursor:pointer;padding:11px 14px;background:#eeedf4;color:#30304b}button.primary,button.active{background:var(--accent);color:white}button:disabled{opacity:.5;cursor:not-allowed}input,textarea{font:inherit}input:not([type=checkbox]),textarea{width:100%;padding:12px;border:1px solid #d7d6df;border-radius:11px;background:white}textarea{min-height:78px}input[type=checkbox]{width:24px;height:24px;accent-color:var(--accent);flex:none}label{cursor:pointer}.stack{display:grid;gap:10px}.choose{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid #e6e6ee;border-radius:12px}.choose small{display:block;color:#737b89;margin-top:4px}.choose.checked{border-color:var(--accent);background:var(--bg)}.goal{display:flex;align-items:center;gap:12px;padding:15px 12px;border-radius:14px;background:var(--bg);margin:9px 0}.goal strong{flex:1}.meter{height:15px;background:#e8e8ee;overflow:hidden;border-radius:20px}.fill{height:100%;background:var(--accent);transition:width .2s}.days{display:flex;gap:6px;overflow:auto;padding:4px 0}.days button{min-width:75px;flex:1;padding:10px 5px;font-size:12px}.banner{background:#f2f7ec;border-radius:13px;padding:12px;margin-top:12px;line-height:1.6}.soft{background:var(--bg);border-radius:13px;padding:12px}.message{background:#f6f5fa;border-radius:11px;padding:12px;margin:8px 0}.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{border-radius:10px;padding:9px 2px;text-align:center;background:#f4f4f7;font-size:12px}.done{background:#e1f6e9}.pending{background:#f6eefc}.star{font-size:22px;color:#bb8b22}.foot{text-align:center;font-size:12px;color:#7b7f89}.buttonline{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}form label{display:block;margin-top:12px}.error{color:#b83242}.report-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.report-grid .soft{text-align:center}.report-detail{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:12px 0}.report-detail>div{text-align:center;background:#f5f5fa;border-radius:9px;padding:8px 2px;font-size:11px}.report-detail b{display:block;margin-top:4px}.report-forms textarea{margin:7px 0}.report-forms button{margin-bottom:4px}@media(max-width:490px){.card{padding:15px}.days button{min-width:62px}.grid{gap:3px}.day{font-size:10px}}
+ .offline-note{padding:10px 13px;border-radius:11px;background:#fff0ce;color:#5c4612;margin:12px 0;font-size:13px;line-height:1.5}.offline-note[hidden]{display:none}</style></head><body><header><h1>🌷 첫째의 자기주도 공부 정원</h1><p>중2 · 나만의 성장 기록 · 오늘 내가 선택한 작은 목표</p></header><main><p id="offline-note" class="offline-note" hidden role="status"></p><p id="status" class="muted">앱을 준비 중이에요.</p><div id="screen"></div><p class="foot">형제와 비교하지 않아요 · 나에게 맞는 목표 1개도 충분해요 💚</p></main>
+ <script type="module">
+ import {createClient} from 'https://esm.sh/@supabase/supabase-js@2';
+ const CONFIG={"id": "first", "title": "첫째의 자기주도 공부 정원", "subtitle": "중2 · 나만의 성장 기록"};
+ const PRESETS=[{"id": "tiny_words", "name": "🔤 영어 단어 3개 외우기", "days": [0, 1, 2, 3, 4, 5, 6]}, {"id": "tiny_read", "name": "📖 책 2쪽 읽기", "days": [0, 1, 2, 3, 4, 5, 6]}, {"id": "tiny_review", "name": "📝 오늘 배운 내용 5분 돌아보기", "days": [0, 1, 2, 3, 4, 5, 6]}, {"id": "wake", "name": "⏰ 6:50 일어나기", "days": [1, 2, 3, 4, 5, 6, 0]}, {"id": "words", "name": "🔤 영어 단어 10~15분", "days": [1, 2, 3, 4, 5, 6, 0]}, {"id": "math", "name": "📐 수학학원 2시간", "days": [1, 3, 5]}, {"id": "homework", "name": "📝 수학학원 숙제·복습", "days": [2, 4, 6]}, {"id": "grammar", "name": "📚 영어 문법 공부", "days": [2, 4, 6]}, {"id": "korean", "name": "✍️ 국어 15분", "days": [2, 4, 0]}, {"id": "science", "name": "🔬 과학 15분", "days": [1, 4, 6]}, {"id": "history", "name": "🏛️ 역사 15분", "days": [2, 5, 0]}, {"id": "novel", "name": "📖 소설책 읽기", "days": [2, 4, 6, 0]}, {"id": "sleep", "name": "🌙 23시 취침 준비", "days": [1, 2, 3, 4, 5, 6, 0]}];
+ const SUPABASE_URL='PASTE_SUPABASE_PROJECT_URL';
+ const SUPABASE_ANON_KEY='PASTE_SUPABASE_PUBLISHABLE_OR_ANON_KEY';
+ const $=id=>document.getElementById(id);
+ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const iso=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+ const dateOf=s=>new Date(s+'T12:00:00'); const today=()=>iso(new Date()); const dayNames=['일','월','화','수','목','금','토'];
+ let chosen=today(),user=null,role=null,checks=[],plans=[],comments=[],focuses=[],feedbacks=[],reportWeek='',client=null,channel=null,editing=false;
+
+ const storagePrefix='habit-pwa-v4-'+CONFIG.id+'-';
+ let syncing=false;
+ const isOffline=()=>!navigator.onLine;
+ const stored=(key,fallback)=>{try{const v=localStorage.getItem(storagePrefix+user.id+':'+key);return v?JSON.parse(v):fallback}catch{return fallback}};
+ const saveStored=(key,val)=>{if(user)try{localStorage.setItem(storagePrefix+user.id+':'+key,JSON.stringify(val))}catch{}};
+ const queue=()=>stored('queue',[]);
+ function updateNetworkUI(){
+   const el=$('offline-note');if(!el)return;
+   const pending=user?queue().length:0;
+   el.hidden=navigator.onLine&&!pending;
+   el.textContent=(!navigator.onLine?'📴 오프라인: 이 기기에 기록 중. ':'')+(pending?`⏳ 서버로 전송할 기록 ${pending}개. 연결되면 자동 전송합니다.`:'인터넷 연결 시 부모 화면으로 동기화됩니다.');
+ }
+ function restoreCache(){
+   if(!user)return false;
+   const state=stored('data',null);if(!state)return false;
+   ({plans,checks,comments,focuses,feedbacks}=state);
+   role=stored('role',null);
+   applyQueue();updateNetworkUI();return !!role;
+ }
+ function cacheData(){saveStored('data',{plans,checks,comments,focuses,feedbacks});saveStored('role',role);updateNetworkUI()}
+ function applyWrite(w){
+   const {table,payload}=w;
+   if(table==='habit_daily_plans')plans=[...plans.filter(x=>x.day!==payload.day),{day:payload.day,goals:payload.goals}];
+   if(table==='habit_checks')checks=[...checks.filter(x=>!(x.day===payload.day&&x.task_id===payload.task_id)),{day:payload.day,task_id:payload.task_id,done:payload.done}];
+   if(table==='habit_weekly_focus')focuses=[...focuses.filter(x=>x.week_start!==payload.week_start),{week_start:payload.week_start,focus:payload.focus}];
+   if(table==='habit_weekly_feedback')feedbacks=[...feedbacks.filter(x=>x.week_start!==payload.week_start),{week_start:payload.week_start,praise:payload.praise,next_support:payload.next_support}];
+   if(table==='habit_messages'&&!comments.some(x=>x.local_id===w.id))comments=[{day:payload.day,body:payload.body,local_id:w.id},...comments];
+ }
+ function applyQueue(){queue().forEach(applyWrite)}
+ function persistWrite(table,payload,conflict){
+   if(!user)return;
+   const entries=queue(),id=crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),w={id,table,payload,conflict};
+   // Keep only the newest unsent value for the same logical record.
+   const identity=x=>x.table+':'+(x.payload.day||x.payload.week_start||'')+':'+(x.payload.task_id||'');
+   const remaining=table==='habit_messages'?entries:entries.filter(x=>identity(x)!==identity(w));
+   remaining.push(w);saveStored('queue',remaining);applyWrite(w);cacheData();board();
+   if(navigator.onLine)flushQueue();
+ }
+ async function flushQueue(){
+   if(syncing||!client||!user||!role||!navigator.onLine)return;
+   syncing=true;
+   try{
+     for(const w of queue()){
+       let result;
+       if(w.table==='habit_messages')result=await client.from(w.table).insert(w.payload);
+       else result=await client.from(w.table).upsert(w.payload,{onConflict:w.conflict});
+       if(result.error){show('⏳ 동기화 보류: '+result.error.message);break}
+       saveStored('queue',queue().filter(x=>x.id!==w.id));
+     }
+     if(!queue().length&&navigator.onLine)await fetchData();
+   }catch(e){console.warn('다음 연결 시 동기화 재시도',e)}
+   finally{syncing=false;updateNetworkUI()}
+ }
+ window.addEventListener('online',()=>{updateNetworkUI();flushQueue()});
+ window.addEventListener('offline',updateNetworkUI);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&navigator.onLine)flushQueue()});
+ if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(console.warn));
+ function show(s){$('status').textContent=s}function render(s){$('screen').innerHTML=s}
+ function planOn(day){return plans.find(p=>p.day===day)?.goals||[]}
+ function done(day,id){return checks.some(c=>c.day===day&&c.task_id===id&&c.done)}
+ function numDone(day){return planOn(day).filter(g=>done(day,g.id)).length}
+ function totalStars(){return plans.reduce((n,p)=>n+(p.goals||[]).filter(g=>done(p.day,g.id)).length,0)}
+ function bloom(){let n=totalStars(),levels=CONFIG.id==='first'?['🌱','🌿','🌷','🌻','🌳']:CONFIG.id==='second'?['🥚','🐣','🐻','🦊','🦁']:['🥚','🐣','🐰','🦄','👑'];return levels[Math.min(4,Math.floor(n/15))]}
+ function dateMenu(){let d=dateOf(chosen),m=new Date(d);m.setDate(d.getDate()-(d.getDay()+6)%7);return `<div class="days">${Array.from({length:7},(_,i)=>{let x=new Date(m);x.setDate(m.getDate()+i);let s=iso(x);return `<button data-day="${s}" class="${s===chosen?'active':''}">${dayNames[x.getDay()]}<br>${x.getMonth()+1}/${x.getDate()}</button>`}).join('')}</div>`}
+ function header(){let goals=planOn(chosen),completed=numDone(chosen),pct=goals.length?Math.round(completed*100/goals.length):0;return `<section class="card"><div class="row"><span style="font-size:46px">${bloom()}</span><div class="grow"><h2>${CONFIG.title}</h2><div class="muted">내가 고른 목표에 집중하는 공간</div><div class="star">⭐ ${totalStars()}개 · 캐릭터 성장 중</div></div><button id="logout">로그아웃</button></div>${dateMenu()}<h3>📅 ${chosen} · ${goals.length?`${completed}/${goals.length}개 달성 (${pct}%)`:'아직 목표를 고르지 않았어요'}</h3><div class="meter"><div class="fill" style="width:${pct}%"></div></div>${goals.length&&pct===100?'<div class="banner">🎉 오늘 내가 정한 약속을 모두 지켰어요! 작은 성공을 축하해요.</div>':goals.length?'<p class="muted">하나씩 천천히 해도 괜찮아요. 선택한 목표만 체크하면 됩니다.</p>':'<p class="muted">오늘은 딱 1개만 선택해도 좋아요.</p>'}</section>`}
+ function candidateList(){let available=PRESETS.filter(t=>t.days.includes(dateOf(chosen).getDay()));let extra=PRESETS.filter(t=>!available.includes(t));return [...available,...extra]}
+ function editor(){let goals=planOn(chosen),ids=new Set(goals.map(g=>g.id));return `<section class="card"><h2>🎯 오늘의 목표 직접 고르기</h2><p class="muted">아래에서 하고 싶은 일을 <b>1~3개</b> 선택해요. 꼭 3개를 채울 필요는 없어요. 오늘은 1개만 골라도 성공할 수 있어요.</p><div class="soft">선택한 목표 <b id="selectedCount">${goals.length}</b>/3개</div><div class="stack" style="margin-top:12px">${candidateList().map(t=>`<label class="choose ${ids.has(t.id)?'checked':''}"><input type="checkbox" data-pick="${esc(t.id)}" ${ids.has(t.id)?'checked':''}><span>${esc(t.name)}${!t.days.includes(dateOf(chosen).getDay())?'<small>다른 요일에 권장되는 활동이지만 선택할 수 있어요</small>':''}</span></label>`).join('')}</div><h3>✍️ 나만의 목표 추가하기</h3><input maxlength="60" id="custom" placeholder="예: 과학 용어 3개 외우기" value="${esc(goals.find(g=>g.id.startsWith('custom_'))?.name||'')}"><p class="muted">직접 작성한 목표도 1개로 계산돼요. 작은 분량으로 구체적으로 적어 보세요.</p><div class="buttonline"><button id="savePlan" class="primary">선택한 목표 저장하기</button><button id="cancelEdit">돌아가기</button></div><p id="planErr" class="error" role="alert"></p></section>`}
+ function selectedView(){let gs=planOn(chosen);return `<section class="card"><div class="row"><h2 class="grow">✅ 내가 선택한 오늘의 미션</h2>${role==='child'?'<button id="edit">목표 바꾸기</button>':''}</div>${gs.length?gs.map((g,i)=>`<label class="goal"><input type="checkbox" data-task="${esc(g.id)}" ${done(chosen,g.id)?'checked':''} ${role==='parent'?'disabled':''}><strong>${esc(g.name)}</strong><span>${done(chosen,g.id)?'🌟':'○'}</span></label>`).join(''):role==='child'?'<div class="soft">오늘 하고 싶은 목표를 직접 골라보세요. 💚</div>':'<p class="muted">아이가 아직 목표를 정하지 않았어요.</p>'}${role==='child'&&!gs.length?'<button class="primary" id="startSelect">내 목표 고르기</button>':''}<p class="muted">학원 일정과 공부 목록은 선택을 돕기 위한 추천이에요. 전부 해야 하는 숙제 목록이 아닙니다.</p></section>`}
+ function weekly(){let m=dateOf(chosen);m.setDate(m.getDate()-(m.getDay()+6)%7);return `<section class="card"><h2>🌼 이번 주 나의 작은 성공</h2><div class="grid">${Array.from({length:7},(_,i)=>{let d=new Date(m);d.setDate(m.getDate()+i);let s=iso(d),n=planOn(s).length,k=numDone(s),ok=n&&n===k;return `<div class="day ${ok?'done':n?'pending':''}"><div>${dayNames[d.getDay()]}</div><div style="font-size:22px">${ok?'🌼':n?'🌱':'·'}</div><div>${n?`${k}/${n}`:'쉬는 날'}</div></div>`}).join('')}</div><p class="muted">🌼은 스스로 정한 목표를 모두 달성한 날이에요. 비어 있는 날도 괜찮아요. 쉬는 날은 실패가 아닙니다.</p></section>`}
+
+ const mondayDate=day=>{let d=dateOf(day);d.setDate(d.getDate()-(d.getDay()+6)%7);return iso(d)};
+ const plusDays=(day,n)=>{let d=dateOf(day);d.setDate(d.getDate()+n);return iso(d)};
+ function weeklyReport(){
+   if(!reportWeek)reportWeek=mondayDate(today());
+   const start=reportWeek, end=plusDays(start,6),next=plusDays(start,7);
+   let chosenDays=0,completedDays=0,goalsTotal=0,doneTotal=0;
+   let daily=Array.from({length:7},(_,i)=>{let day=plusDays(start,i),gs=planOn(day),total=gs.length,success=numDone(day);
+     if(total){chosenDays++;goalsTotal+=total;doneTotal+=success;if(total===success)completedDays++}return {day,total,success};});
+   let f=focuses.find(x=>x.week_start===start), review=feedbacks.find(x=>x.week_start===start);
+   let percent=goalsTotal?Math.round(doneTotal*100/goalsTotal):0;
+   return `<section class="card"><div class="row"><h2 class="grow">📔 일요일 성장 보고서</h2><button id="prevReport">◀ 이전 주</button><button id="currentReport">이번 주</button><button id="nextReport">다음 주 ▶</button></div>
+    <p class="muted">${start} ~ ${end} · 다른 아이와 비교하지 않고 내가 고른 목표만 돌아봐요. 목표 없는 날은 쉬는 날로 기록됩니다.</p>
+    <div class="report-grid"><div class="soft">🌼<br><strong>${completedDays}일</strong><br><span class="muted">약속을 지킨 날</span></div><div class="soft">⭐<br><strong>${doneTotal}개</strong><br><span class="muted">실천한 목표</span></div><div class="soft">🎯<br><strong>${percent}%</strong><br><span class="muted">선택한 목표 달성률</span></div></div>
+    <div class="report-detail">${daily.map((d,i)=>`<div>${['월','화','수','목','금','토','일'][i]}<b>${!d.total?'🌙':d.success===d.total?'🌼':'🌱'}</b><small>${d.total?d.success+'/'+d.total:'휴식'}</small></div>`).join('')}</div>
+    <p class="muted">${chosenDays}일에 목표를 골랐어요. ${7-chosenDays}일은 목표를 설정하지 않았습니다. 달성하지 못해도 감점이나 벌점은 없어요.</p>
+    <h3>🌱 다음 주에 키우고 싶은 습관 한 가지</h3>
+    ${role==='child'?`<p class="muted">일요일에 함께 정해도 좋고, 생각났을 때 적어도 좋아요. 다음 주 매일 해야 하는 의무는 아니에요.</p><textarea id="weekFocus" maxlength="160" placeholder="예: 다음 주에는 책 2쪽 읽기를 먼저 선택해볼래요">${esc(f?.focus||'')}</textarea><button id="saveFocus" class="primary">나의 다음 주 작은 약속 저장</button>`:`<div class="soft">${f?esc(f.focus):'아이가 아직 다음 주 목표를 정하지 않았어요.'}</div>`}
+    <h3>💌 부모님의 성장 피드백</h3>
+    ${role==='parent'?`<div class="report-forms"><label>이번 주 가장 좋았던 점</label><textarea id="weekPraise" maxlength="300" placeholder="예: 한 가지 목표를 스스로 선택하고 끝까지 해낸 점이 좋았어">${esc(review?.praise||'')}</textarea><label>다음 주에 도와주고 싶은 것(선택)</label><textarea id="weekSupport" maxlength="300" placeholder="예: 영어 듣기 시간을 함께 정하자">${esc(review?.next_support||'')}</textarea><button id="saveReview" class="primary">성장 피드백 저장</button></div>`:`<div class="soft">${review?`<strong>칭찬해요</strong><p>${esc(review.praise)}</p>${review.next_support?`<strong>함께할 일</strong><p>${esc(review.next_support)}</p>`:''}`:'이번 주 부모님의 응원 메시지를 기다려요.'}</div>`}
+    <p class="muted" id="weeklyStatus" role="status">매주 일요일 10분 동안 함께 살펴보세요. 저장한 기록은 다음에도 확인할 수 있어요.</p></section>`;
+ }
+ async function saveFocus(){let input=$('weekFocus'),value=input.value.trim();if(!value)return alert('이번 주에 키우고 싶은 습관을 한 문장으로 적어주세요.');persistWrite('habit_weekly_focus',{child_key:CONFIG.id,week_start:reportWeek,focus:value,author_id:user.id,updated_at:new Date().toISOString()},'child_key,week_start')}
+ async function saveReview(){let praise=$('weekPraise').value.trim(),support=$('weekSupport').value.trim();if(!praise)return alert('한 가지 칭찬을 적어주세요.');persistWrite('habit_weekly_feedback',{child_key:CONFIG.id,week_start:reportWeek,praise,next_support:support,author_id:user.id,updated_at:new Date().toISOString()},'child_key,week_start')}
+
+ function messageBlock(){return `<section class="card"><h2>${role==='parent'?'💌 부모님의 응원 보내기':'💌 부모님의 응원'}</h2>${comments.slice(0,7).map(c=>`<div class="message">${esc(c.body)}<p class="muted">${esc(c.day)}</p></div>`).join('')||'<p class="muted">아직 응원 메시지가 없어요.</p>'}${role==='parent'?'<textarea maxlength="300" id="comment" placeholder="예: 오늘 하나의 약속을 스스로 지킨 게 멋지다!"></textarea><button class="primary" id="send">응원 보내기</button>':''}</section>`}
+ function bind(){document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{chosen=b.dataset.day;editing=false;board()});$('logout').onclick=()=>client.auth.signOut();if($('edit'))$('edit').onclick=()=>{editing=true;board()};if($('startSelect'))$('startSelect').onclick=()=>{editing=true;board()};document.querySelectorAll('[data-task]').forEach(x=>x.onchange=async()=>{x.disabled=true;await saveCheck(x.dataset.task,x.checked)});if($('send'))$('send').onclick=sendMessage; if($('prevReport'))$('prevReport').onclick=()=>{reportWeek=plusDays(reportWeek,-7);board()}; if($('nextReport'))$('nextReport').onclick=()=>{reportWeek=plusDays(reportWeek,7);board()}; if($('currentReport'))$('currentReport').onclick=()=>{reportWeek=mondayDate(today());board()}; if($('saveFocus'))$('saveFocus').onclick=saveFocus; if($('saveReview'))$('saveReview').onclick=saveReview;
+ if($('cancelEdit'))$('cancelEdit').onclick=()=>{editing=false;board()};if($('savePlan'))$('savePlan').onclick=savePlan;
+ if($('selectedCount'))document.querySelectorAll('[data-pick]').forEach(x=>x.onchange=()=>{let n=document.querySelectorAll('[data-pick]:checked').length+($('custom').value.trim()?1:0);$('selectedCount').textContent=n;if(n>3){x.checked=false;$('planErr').textContent='목표는 최대 3개까지만 고를 수 있어요.'}else $('planErr').textContent=''});
+ if($('custom'))$('custom').oninput=()=>{$('selectedCount').textContent=document.querySelectorAll('[data-pick]:checked').length+($('custom').value.trim()?1:0)};
+ }
+ function board(){if(!user||!role)return;render(header()+(role==='child'&&editing?editor():selectedView())+weekly()+weeklyReport()+messageBlock());bind();updateNetworkUI()}
+ async function savePlan(){let picks=[...document.querySelectorAll('[data-pick]:checked')].map(x=>PRESETS.find(t=>t.id===x.dataset.pick)).filter(Boolean).map(t=>({id:t.id,name:t.name}));let custom=$('custom').value.trim();if(custom)picks.push({id:'custom_1',name:custom});if(picks.length<1||picks.length>3){$('planErr').textContent='1~3개의 목표를 골라주세요.';return}editing=false;persistWrite('habit_daily_plans',{child_key:CONFIG.id,day:chosen,goals:picks,updated_by:user.id,updated_at:new Date().toISOString()},'child_key,day')}
+ async function saveCheck(task_id,isDone){if(role!=='child'||!planOn(chosen).some(g=>g.id===task_id))return;persistWrite('habit_checks',{child_key:CONFIG.id,day:chosen,task_id,done:isDone,updated_by:user.id,updated_at:new Date().toISOString()},'child_key,day,task_id')}
+ async function sendMessage(){let text=$('comment').value.trim();if(!text)return;persistWrite('habit_messages',{child_key:CONFIG.id,day:today(),body:text,author_id:user.id},null)}
+ async function fetchData(){
+   if(!user||!role)return;
+   if(isOffline()){if(!restoreCache())show('오프라인 기록이 아직 없습니다. 인터넷 연결 후 한 번 로그인해 주세요.');else{show('📴 오프라인 · 기기에 저장된 최근 기록');board()}return}
+   try{
+     let [a,b,c,d,e]=await Promise.all([client.from('habit_daily_plans').select('day,goals').eq('child_key',CONFIG.id).order('day',{ascending:false}).limit(1200),client.from('habit_checks').select('day,task_id,done').eq('child_key',CONFIG.id).order('day',{ascending:false}).limit(2500),client.from('habit_messages').select('day,body').eq('child_key',CONFIG.id).order('created_at',{ascending:false}).limit(30),client.from('habit_weekly_focus').select('week_start,focus').eq('child_key',CONFIG.id).order('week_start',{ascending:false}).limit(120),client.from('habit_weekly_feedback').select('week_start,praise,next_support').eq('child_key',CONFIG.id).order('week_start',{ascending:false}).limit(120)]);
+     if(a.error||b.error||c.error||d.error||e.error)throw(a.error||b.error||c.error||d.error||e.error);
+     plans=a.data||[];checks=b.data||[];comments=c.data||[];focuses=d.data||[];feedbacks=e.data||[];
+     applyQueue();cacheData();show(role==='parent'?'부모 확인 화면 · 이 아이 기록만 표시':'오늘의 작은 목표를 내가 선택해요');board();
+   }catch(e){console.warn(e);if(!restoreCache())show('기록을 가져올 수 없어요. 연결 상태를 확인하세요.');else{show('📴 저장된 기록 표시 · 서버 연결 대기');board()}}
+ }
+
+ function authScreen(){show('개인별 로그인');render(`<section class="card"><h2>🔐 ${CONFIG.title}</h2><p class="muted">아이와 부모가 각자의 계정으로 로그인합니다. 부모는 기록을 보고 응원할 수 있어요.</p><form id="auth"><label>이메일<input id="email" type="email" autocomplete="email" required></label><label>비밀번호<input id="password" type="password" autocomplete="current-password" minlength="6" required></label><div class="buttonline"><button class="primary" type="submit">로그인</button><button id="signup" type="button">회원가입</button></div></form></section>`);$('auth').onsubmit=e=>{e.preventDefault();login(false)};$('signup').onclick=()=>login(true)}
+ async function login(signup){let email=$('email').value.trim(),password=$('password').value;try{let {error}=signup?await client.auth.signUp({email,password}):await client.auth.signInWithPassword({email,password});if(error)throw error;if(signup)alert('가입했습니다. 이메일 인증 요청이 왔다면 확인 후 로그인하세요.')}catch(e){alert(e.message)}}
+ function waiting(){show('부모의 계정 승인 대기');render(`<section class="card"><h2>계정 연결 대기</h2><p class="muted">${esc(user.email)} 계정을 부모가 등록하면 시작할 수 있어요.</p><div class="buttonline"><button id="retry">다시 확인</button><button id="logout">로그아웃</button></div></section>`);$('retry').onclick=load;$('logout').onclick=()=>client.auth.signOut()}
+ async function load(){if(!user)return;if(isOffline()&&restoreCache()){show('📴 오프라인 · 저장된 기록 사용');board();return}let {data,error}=await client.from('habit_members').select('role').eq('child_key',CONFIG.id).eq('user_id',user.id).maybeSingle();if(error)return alert(error.message);role=data?.role||null;if(!role)return waiting();saveStored('role',role);await fetchData();if(queue().length)flushQueue();if(channel)client.removeChannel(channel);channel=client.channel('choice-'+CONFIG.id).on('postgres_changes',{event:'*',schema:'public',table:'habit_checks',filter:'child_key=eq.'+CONFIG.id},()=>fetchData()).on('postgres_changes',{event:'*',schema:'public',table:'habit_daily_plans',filter:'child_key=eq.'+CONFIG.id},()=>fetchData()).on('postgres_changes',{event:'*',schema:'public',table:'habit_messages',filter:'child_key=eq.'+CONFIG.id},()=>fetchData()).on('postgres_changes',{event:'*',schema:'public',table:'habit_weekly_focus',filter:'child_key=eq.'+CONFIG.id},()=>fetchData()).on('postgres_changes',{event:'*',schema:'public',table:'habit_weekly_feedback',filter:'child_key=eq.'+CONFIG.id},()=>fetchData()).subscribe()}
+ async function start(){if(SUPABASE_URL.includes('PASTE_')||SUPABASE_ANON_KEY.includes('PASTE_')){show('온라인 저장소 연결 전');render('<section class="card"><h2>앱 파일 준비 완료 🌱</h2><p>Supabase URL과 publishable/anon key를 설정하면 독립 기록과 부모 확인 기능을 사용할 수 있어요.</p><p class="muted">동봉된 설치 안내서를 먼저 확인해 주세요.</p></section>');return}client=createClient(SUPABASE_URL,SUPABASE_ANON_KEY);client.auth.onAuthStateChange((event,session)=>{setTimeout(async()=>{let next=session?.user||null;if(!next){user=null;role=null;if(channel){client.removeChannel(channel);channel=null}authScreen();return}if(!user||user.id!==next.id){user=next;await load()}},0)});let {data}=await client.auth.getSession();user=data.session?.user||null;if(user)await load();else authScreen()}
+ start().catch(e=>{show('연결 실패');render('<section class="card error">'+esc(e.message)+'</section>')});
+ </script></body></html>

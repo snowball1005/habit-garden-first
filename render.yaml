@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: habit-first
+    runtime: static
+    staticPublishPath: public
+    buildCommand: echo "Static site"
